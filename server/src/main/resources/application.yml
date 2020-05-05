@@ -1,0 +1,7 @@
+server:
+  port: 9090
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    io.honeymon.study.resttemplate.server: DEBUG

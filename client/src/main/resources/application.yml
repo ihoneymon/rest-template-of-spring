@@ -1,0 +1,14 @@
+client:
+  mode: rest
+
+server:
+  root-uri: http://localhost:9090
+  connect-timeout: 5s
+  read-timeout: 5s
+  max-connect-per-route: 10
+  max-connect-count: 100
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    io.honeymon.study.resttemplate.client: DEBUG
