@@ -17,35 +17,28 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class ServerClientRest implements ServerClient {
+public class ServerClientHttpClient implements ServerClient {
     private final ServerClientProperties properties;
     private final RestTemplate restTemplate;
 
-    public ServerClientRest(ServerClientProperties properties) {
+    public ServerClientHttpClient(RestTemplateBuilder restTemplateBuilder, ServerClientProperties properties) {
         this.properties = properties;
 
         /**
-         * @see <a href="https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/org/apache/http/impl/conn/PoolingHttpClientConnectionManager.html">PoolingHttpClientConnectionManager</a>
-         */
-        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-        connectionManager.setMaxTotal(200);
-        connectionManager.setDefaultMaxPerRoute(properties.getMaxConnectPerRoute());
-
-        /**
-         * @see <a href="https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/org/apache/http/impl/client/HttpClientBuilder.html">https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/org/apache/http/impl/client/HttpClientBuilder.html</a>
+         * @see <a href="https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/org/apache/http/impl/client/HttpClientBuilder.html">HttpClientBuilder</a>
          */
         CloseableHttpClient httpClient = HttpClientBuilder.create()
                 .setMaxConnPerRoute(properties.getMaxConnectPerRoute()) // 라우트별 커텍션 최대갯수
                 .setMaxConnTotal(properties.getMaxConnectCount()) // 전체 커넥션 최대 갯수
                 .setConnectionTimeToLive(5, TimeUnit.SECONDS)
-                .build();
+                .build(); // 기본 HttpClientConnectionManager PoolingHttpClientConnectionManager 사용
 
-        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory
+        HttpComponentsClientHttpRequestFactory requestFactory
                 = new HttpComponentsClientHttpRequestFactory(httpClient);
 
-        this.restTemplate = new RestTemplateBuilder()
+        this.restTemplate = restTemplateBuilder
                 .rootUri(properties.getRootUri())
-                .requestFactory(() -> clientHttpRequestFactory)
+                .requestFactory(() -> requestFactory)
                 .setConnectTimeout(properties.getConnectTimeout())
                 .setReadTimeout(properties.getReadTimeout())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)

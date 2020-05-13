@@ -1,5 +1,5 @@
 client:
-  mode: rest
+  mode: http-client
 
 server:
   root-uri: http://localhost:9090

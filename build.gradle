@@ -45,5 +45,6 @@ subprojects {
 project(":client") {
     dependencies {
         implementation("org.apache.httpcomponents:httpclient")
+        implementation("com.squareup.okhttp3:okhttp")
     }
 }
